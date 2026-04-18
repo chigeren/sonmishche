@@ -1,4 +1,4 @@
-.env
+# .env
 *.json
 !requirements.txt
 !README_DEPLOY.md
