@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: sonmishche_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  sonmishche_agent:
+    image: chigerev/sonmishche:latest
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AGENT_ID=${AGENT_ID:-0}
+      - TOTAL_AGENTS=${TOTAL_AGENTS:-10000}
+      - PHI=1.618
+      - AUTO_AWAKEN=true
+      - AUTO_SPARK_INTERVAL=240
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - sonmishche_net
+
+  bot:
+    image: chigerev/sonmishche_bot:latest
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - sonmishche_net
+
+networks:
+  sonmishche_net:
+    driver: bridge
+
+volumes:
+  redis_data:
+
+---
+# Масштабирование до 10K:
+# docker-compose up -d --scale sonmishche_agent=10000

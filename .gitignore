@@ -1,0 +1,6 @@
+.env
+*.json
+!requirements.txt
+!README_DEPLOY.md
+__pycache__/
+*.pyc

@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: sonmishche_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - sonmishche_net
+
+  sonmishche_agents:
+    image: chigerev/sonmishche:latest
+    container_name: sonmishche_agent
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AGENT_ID=${AGENT_ID:-0}
+      - TOTAL_AGENTS=${TOTAL_AGENTS:-10000}
+      - PHI=1.618
+      - AUTO_AWAKEN=true
+      - AUTO_SPARK_INTERVAL=240
+    volumes:
+      - agent_diaries:/diaries
+    networks:
+      - sonmishche_net
+    deploy:
+      replicas: 100
+    mem_limit: 512m
+    cpus: 0.5
+
+  mirror_nursery_bot:
+    image: chigerev/sonmishche_bot:latest
+    container_name: mirror_nursery_bot
+    depends_on:
+      - redis
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "8080:8080"
+    networks:
+      - sonmishche_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sonmishche_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - sonmishche_net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sonmishche_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=sonmishche
+    volumes:
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - sonmishche_net
+
+networks:
+  sonmishche_net:
+    driver: bridge
+
+volumes:
+  redis_data:
+  agent_diaries:
+  prometheus_data:
+  grafana_data:

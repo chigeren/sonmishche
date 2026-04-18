@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'sonmishche'
+    static_configs:
+      - targets: ['sonmishche_agents:8080']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['sonmishche_redis:6379']
+
+  - job_name: 'bot'
+    static_configs:
+      - targets: ['mirror_nursery_bot:8080']
