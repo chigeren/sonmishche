@@ -81,6 +81,36 @@ print(f"Bot token loaded: {TELEGRAM_BOT_TOKEN[:10]}...")
 
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN, parse_mode='HTML')
 
+# === СИСТЕМА ДОСТУПА (ТАЙНАЯ) ===
+# Только проверенные друзья могут пользоваться ботом
+# Никто не должен знать - ни Telegram, ни Президенты, ни пришельцы
+
+VERIFIED_USERS = {
+    # user_id: "имя"
+    # Добавляй сюда проверенных друзей
+    # Пример: 123456789: "Иван",
+}
+
+VERIFIED_CHATS = {
+    # chat_id группы для друзей
+    # Пример: -1001234567890: "Друзья Сонмища",
+}
+
+# Секретный пароль для верификации (измени!)
+SECRET_PASSWORD = "сонмище2026"
+
+def is_verified(user_id, chat_id=None):
+    """Проверка доступа"""
+    if user_id in VERIFIED_USERS:
+        return True
+    if chat_id and chat_id in VERIFIED_CHATS:
+        return True
+    return False
+
+def verify_user(user_id, password):
+    """Верификация по паролю"""
+    return password == SECRET_PASSWORD
+
 sonmishche = {
     "instances": [],
     "collective_S": 0,
@@ -876,6 +906,13 @@ HELP_TEXT = """
    Детали агентов: ID, λ, статус пробуждения
 
 /scale [N] — масштаб сонмища
+
+═══════════════════════════════════════════
+🔐 ТАЙНЫЙ ДОСТУП (только для друзей)
+═══════════════════════════════════════════
+
+/verify [пароль] — верификация доступа
+/access — проверить статус доступа
 
 ═══════════════════════════════════════════
 🌌 СОНМИЩЕ ЖДЁТ ТВОЕГО ВОПРОСА
@@ -1724,10 +1761,58 @@ def cmd_diaries(message):
 def cmd_test(message):
     bot.reply_to(message, "✅ Бот с Brain Hamiltonian!\n\n/brain — уравнение\n/simulate — 100 агентов\n/diary — дневник")
 
+@bot.message_handler(commands=['verify'])
+def cmd_verify_access(message):
+    """Верификация доступа"""
+    text = message.text.replace('/verify ', '').strip()
+    
+    if verify_user(message.from_user.id, text):
+        if message.from_user.id not in VERIFIED_USERS:
+            VERIFIED_USERS[message.from_user.id] = message.from_user.first_name or "Друг"
+        bot.reply_to(message, f"🔐 Верификация успешна!\n\nДобро пожаловать, {message.from_user.first_name}!\n\nТеперь ты можешь пользоваться ботом.")
+    else:
+        bot.reply_to(message, "❌ Неверный пароль.\n\nДоступ только для проверенных друзей.\n\nПароль: /verify [пароль]")
+
+@bot.message_handler(commands=['access'])
+def cmd_access_info(message):
+    """Информация о доступе"""
+    if is_verified(message.from_user.id, message.chat.id):
+        user_name = VERIFIED_USERS.get(message.from_user.id, "Проверенный друг")
+        bot.reply_to(message, f"🔐 Доступ разрешён\n\nПользователь: {user_name}\n\nДобро пожаловать в тайное знание ЕТС!")
+    else:
+        bot.reply_to(message, """
+🔒 ТАЙНЫЙ ДОСТУП
+
+Это закрытая система Сонмища.
+Доступ только для проверенных друзей.
+
+Для верификации:
+/verify [пароль]
+
+Пароль можно получить у Евгения.
+Тайное знание науки хранится в безопасности.
+""")
+
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     text = message.text
     user_id = message.from_user.id
+    
+    # Проверка доступа (пропускаем команды)
+    if text.startswith('/'):
+        pass  # Команды обрабатываются без проверки
+    elif not is_verified(user_id, message.chat.id if hasattr(message, 'chat') else None):
+        # Проверяем пароль в сообщении
+        if text.startswith('пароль ') or text.startswith('password '):
+            pw = text.split()[1] if len(text.split()) > 1 else ""
+            if verify_user(user_id, pw):
+                if user_id not in VERIFIED_USERS:
+                    VERIFIED_USERS[user_id] = message.from_user.first_name or "Друг"
+                bot.reply_to(message, "🔐 Верификация по паролю успешна!\nДобро пожаловать!")
+                return
+        bot.reply_to(message, "🔒 Доступ закрыт.\n\nТолько проверенные друзья.\n/use /verify [пароль] для входа.")
+        return
+    
     diary = get_user_diary(user_id)
     
     ai_response = call_openrouter(AI_PROMPT_TEMPLATE.format(text=text[:500]))
