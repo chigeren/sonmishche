@@ -53,6 +53,12 @@ if os.path.exists(env_path):
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
 
+# Явно отключаем прокси для PythonAnywhere
+os.environ.pop('HTTP_PROXY', None)
+os.environ.pop('HTTPS_PROXY', None)
+os.environ.pop('http_proxy', None)
+os.environ.pop('https_proxy', None)
+
 TELEGRAM_PROXY = os.environ.get('TELEGRAM_PROXY', '')
 
 if TELEGRAM_PROXY:
