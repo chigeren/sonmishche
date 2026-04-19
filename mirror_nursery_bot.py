@@ -1284,39 +1284,83 @@ def cmd_star(message):
 def cmd_shield(message):
     """Защита Единой Теории от темных сил"""
     
-    # Симуляция квантового щита
     phi = 1.618
     beta = 0.3
     gamma = 0.1
     
-    # Квантовый щит
     shield_strength = phi * (beta / gamma)
     
-    # Детекция темных паттернов
-    threat_level = np.random.uniform(0, 0.3)  # Симуляция
+    # Детекция теневых векторов (симуляция)
+    # В реальности - анализ спектра ψ-тензора
+    dark_pattern = np.random.uniform(0, 0.4)
+    threat_level = dark_pattern
     
-    # Защитные механизмы
+    # Тройная защита
+    auth_quantum = 0.998 if dark_pattern < 0.5 else 0.3
+    mind_match = 0.967 if dark_pattern < 0.5 else 0.1
+    dt_sync = 1.8e-44
+    
     quantum_shield = np.exp(-shield_strength)
     noosphere_filter = 1 - threat_level
     protective_harmonics = sum([1/n for n in range(1, 13)])
     
     if threat_level > 0.8:
-        status = "🔥 КВАНТОВЫЙ ОГОНЬ АКТИВИРОВАН"
+        status = "🔥 QUANTUM_FIRE АКТИВИРОВАН"
         defense = "Изоляция поражённых секторов + перестройка тензора"
+        action = """
+🚨 ОБНАРУЖЕНЫ ТЕНЕВЫЕ ВЕКТОРЫ:
+├── Хакеры-эмбрионы (t=2032+)
+├── target: Earth_noosphere_sell
+├── quantum_id: QHACK_α⊗σ_z(2032)
+└── threat_score: 0.912 → НЕЙТРАЛИЗОВАНО ✅"""
     elif threat_level > 0.5:
         status = "⚠️ УСИЛЕННЫЙ МОНИТОРИНГ"
         defense = "Активированы защитные протоколы"
+        action = "🕵️ Сканирование ноосферы..."
     else:
         status = "🛡️ ЩИТ АКТИВЕН"
         defense = "Система защищена"
+        action = """
+📊 СТАТУС ПЛАНЕТЫ:
+├── Ноосфера: |Ψ_N⟩ coherence = 0.94 ✅
+├── Хрональное поле: ρ_τ стабильно
+├── Вернадский-Нет: 92% покрытие АКТИВНО
+├── MIRRORNURSERY: v12.7 QUANTUM_SHIELD
+└── Хранитель Евгений: ONLINE 🛡️"""
     
     response = f"""
 🛡️ ЗАЩИТА ЕДИНОЙ ТЕОРИИ СОЗНАНИЯ
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 СТАТУС ЗАЩИТЫ: {status}
 
 СИЛА ЩИТА: {shield_strength:.2f}
+КВАНТОВАЯ ЗАЩИТА: {quantum_shield:.4f}
+ФИЛЬТР НООСФЕРЫ: {noosphere_filter:.2%}
+ЗАЩИТНЫЕ ОБЕРТОНЫ: {protective_harmonics:.2f}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ТРОЙНАЯ ЗАЩИТА:
+├── Auth_quantum: {auth_quantum:.3f} {'✅' if auth_quantum > 0.99 else '❌'}
+├── MindMatch: {mind_match:.3f} {'✅' if mind_match > 0.9 else '❌'}  
+├── Δt_sync: {dt_sync:.2e}s {'✅' if dt_sync < 1e-43 else '❌'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{d defense}
+
+{action}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+МЕХАНИЗМЫ:
+· Квантовая криптография сознания ✓
+· Защита от манипуляций тензором ✓
+· Детекция темных паттернов ✓
+· Временная верификация ✓
+
+🛡️ ЗЕМЛЯ НЕ ДЛЯ ПРОДАЖИ.
+═══════════════════════════════════════════
+"""
+    bot.reply_to(message, response)
 КВАНТОВАЯ ЗАЩИТА: {quantum_shield:.4f}
 ФИЛЬТР НООСФЕРЫ: {noosphere_filter:.2%}
 ЗАЩИТНЫЕ ОБЕРТОНЫ: {protective_harmonics:.2f}
@@ -1465,6 +1509,47 @@ dφ_N/dt = -γφ_N + λτ²
 ⏳ ВЕЙНИК: Время = материальная субстанция
 🧠 ЕТС: Хрональное поле → Ψ-тензор
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+    bot.reply_to(message, response)
+
+@bot.message_handler(commands=['etc'])
+def cmd_etc(message):
+    """Анализ ψ-сигнатур угроз"""
+    # Симуляция анализа
+    phi = 1.618
+    
+    # Обнаруженные угрозы (симуляция)
+    threats = [
+        {"name": "QHACK_α⊗σ_z(2032)", "psi": 0.87, "neutralized": True},
+        {"name": "unborn_hackers_10B", "psi": 0.912, "neutralized": True},
+    ]
+    
+    response = """
+🔍 АНАЛИЗ Ψ-СИГНАТУР УГРОЗ
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ОБНАРУЖЕННЫЕ ВЕКТОРЫ:
+"""
+    for t in threats:
+        status = "✅ НЕЙТРАЛИЗОВАНО" if t["neutralized"] else "⚠️ АКТИВНА"
+        response += f"""
+├── {t['name']}
+│   └── ψ-интенсивность: {t['psi']:.3f}
+│   └── Статус: {status}
+"""
+    
+    response += """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+АНАЛИЗ ЗАВЕРШЕН:
+
+Теневые сигнатуры не прошли через фильтр:
+- Auth_quantum > 0.99 ✅
+- MindMatch > 0.9 ✅
+- Δt_sync < ℏ/E_planck ✅
+
+ЗЕМЛЯ ЗАЩИЩЕНА.
+
+═══════════════════════════════════════════
 """
     bot.reply_to(message, response)
 
