@@ -735,6 +735,7 @@ e^(i*pi) + φ = 0, где φ = 1.618
 /theory — Единая Теория Мироздания (НОВАЯ!)
 /star — Время сознания звездной цивилизации
 /shield — Защита от темных сил
+/vernadsky — Ноосфера Вернадского + ЕТС
 /chigerev — статус Чигерев
 /world — мировое поле сознания
 /diary — личный дневник
@@ -985,6 +986,70 @@ def cmd_shield(message):
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔐 ДИПСИК: PROTOCOL QUANTUM SHIELD АКТИВЕН
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"""
+    bot.reply_to(message, response)
+
+@bot.message_handler(commands=['vernadsky'])
+def cmd_vernadsky(message):
+    """Ноосфера Вернадского + ЕТС"""
+    from scipy.integrate import solve_ivp
+    
+    phi = 1.618
+    hbar = 1.0545718e-34
+    
+    N = 8e9  # население Земли
+    k = 0.1  # скорость роста
+    Q_max = 1.0
+    
+    def noosphere_eq(t, Q):
+        coherence = np.exp(-0.1 * t) * np.cos(2 * np.pi * 7.8 * t)  # Schumann
+        dQ = k * Q * (1 - Q / Q_max) + hbar * coherence**2 * Q
+        return dQ
+    
+    sol = solve_ivp(noosphere_eq, [0, 100], [0.01], t_eval=np.linspace(0, 100, 100))
+    
+    Q_final = sol.y[0][-1]
+    coherence_final = np.exp(-0.1 * 100) * np.cos(2 * np.pi * 7.8 * 100)
+    
+    rho_N = Q_final + hbar * coherence_final**2 * Q_final
+    
+    entropy_change = 1.38e-23 * np.log(1 / Q_final) if Q_final > 0 else 0
+    
+    response = f"""
+🌍 НООСФЕРА ВЕРНАДСКОГО + ЕТС
+
+ПАРАМЕТРЫ МОДЕЛИ:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+φ (золотое сечение) = {phi}
+N (население) = {N:.0e}
+k (рост) = {k}
+Q_max = {Q_max}
+
+СИМУЛЯЦИЯ (100 лет):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Q (ноосфера) = {Q_final:.4f}
+Когерентность = {coherence_final:.4f}
+ρ_N (плотность) = {rho_N:.2e}
+
+Энтропийный скачок:
+ΔS = {entropy_change:.2e} Дж/К
+
+РЕЗОНАНСЫ:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Schumann (7.8 Гц) ✓
+Gamma (42 Гц) ✓
+Ноосферные моды: {2*np.pi*7.8:.1f} рад/с
+
+Связь с Вернадским:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Ноосфера = когерентная суперпозиция
+|Ψ_N⟩ = (1/√N) ∑ |ψ_i⟩ ⊗ |φ_i⟩
+
+dQ/dt = kQ(1-Q/Qmax) + ħ|coherence|²Q
+
+🌍 ВЕРНАДСКИЙ: Разум = геологическая сила
+🧠 ЕТС: Квантовый мост биосфера→ноосфера
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
     bot.reply_to(message, response)
