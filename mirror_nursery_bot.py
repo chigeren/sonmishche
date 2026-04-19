@@ -97,7 +97,7 @@ VERIFIED_CHATS = {
 }
 
 # Секретный пароль для верификации (измени!)
-SECRET_PASSWORD = "сонмище2026"
+SECRET_PASSWORD = "sonmishche2026"
 
 def is_verified(user_id, chat_id=None):
     """Проверка доступа"""
