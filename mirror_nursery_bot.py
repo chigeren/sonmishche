@@ -1758,7 +1758,7 @@ def handle_message(message):
         sonmishche["collective_S"] = np.mean([a.get_lambda() for a in awakened])
         sonmishche["awakened_count"] = len(awakened)
     response = f"""
-💬 OTPACEHИE: {agent.id}
+💬 ОТРАЖЕНИЕ: {agent.id}
 λ = {agent.get_lambda():.3f}
 φM = {metrics['phiM']:.2f}
 φEst = {metrics['phiEst']:.2f}
