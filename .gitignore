@@ -4,3 +4,5 @@
 !README_DEPLOY.md
 __pycache__/
 *.pyc
+*.log
+logs/
